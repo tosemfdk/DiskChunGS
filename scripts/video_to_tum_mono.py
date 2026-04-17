@@ -3,6 +3,7 @@
 
 Example:
     python3 scripts/video_to_tum_mono.py /path/to/konkuk_lake.mp4
+    python3 scripts/video_to_tum_mono.py /path/to/konkuk_lake.mp4 --width 640 --height 480
 
 This creates:
     data/<video_stem>_tum_mono/
@@ -66,6 +67,18 @@ def parse_args() -> argparse.Namespace:
         help="Extracted image format (default: png)",
     )
     parser.add_argument(
+        "--width",
+        type=int,
+        default=None,
+        help="Optional output image width in pixels",
+    )
+    parser.add_argument(
+        "--height",
+        type=int,
+        default=None,
+        help="Optional output image height in pixels",
+    )
+    parser.add_argument(
         "--force",
         action="store_true",
         help="Overwrite the output directory if it already exists",
@@ -109,16 +122,33 @@ def prepare_output_dir(output_dir: Path, force: bool) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
 
+def build_filter_chain(fps: float, width: int | None, height: int | None) -> str:
+    filters = [f"fps={fps}"]
+
+    if width is None and height is None:
+        return ",".join(filters)
+    if width is None or height is None:
+        raise SystemExit("--width and --height must be provided together")
+    if width <= 0 or height <= 0:
+        raise SystemExit("--width and --height must be greater than 0")
+
+    filters.append(f"scale={width}:{height}")
+    return ",".join(filters)
+
+
 def run_ffmpeg(
     ffmpeg_bin: str,
     input_video: Path,
     temp_frames_dir: Path,
     fps: float,
+    width: int | None,
+    height: int | None,
     start_time: float,
     duration: float | None,
     image_ext: str,
 ) -> None:
     output_pattern = temp_frames_dir / f"frame_%06d.{image_ext}"
+    filter_chain = build_filter_chain(fps=fps, width=width, height=height)
     cmd = [ffmpeg_bin, "-hide_banner", "-loglevel", "error"]
 
     if start_time > 0:
@@ -132,7 +162,7 @@ def run_ffmpeg(
     if image_ext == "jpg":
         cmd.extend(["-q:v", "2"])
 
-    cmd.extend(["-vf", f"fps={fps}", "-start_number", "0", str(output_pattern)])
+    cmd.extend(["-vf", filter_chain, "-start_number", "0", str(output_pattern)])
 
     subprocess.run(cmd, check=True)
 
@@ -176,6 +206,12 @@ def main() -> int:
         raise SystemExit("--start-time must be >= 0")
     if args.duration is not None and args.duration <= 0:
         raise SystemExit("--duration must be greater than 0")
+    if (args.width is None) != (args.height is None):
+        raise SystemExit("--width and --height must be provided together")
+    if args.width is not None and args.width <= 0:
+        raise SystemExit("--width must be greater than 0")
+    if args.height is not None and args.height <= 0:
+        raise SystemExit("--height must be greater than 0")
     if not args.input_video.is_file():
         raise SystemExit(f"Input video not found: {args.input_video}")
 
@@ -190,6 +226,8 @@ def main() -> int:
             input_video=args.input_video,
             temp_frames_dir=temp_frames_dir,
             fps=args.fps,
+            width=args.width,
+            height=args.height,
             start_time=args.start_time,
             duration=args.duration,
             image_ext=args.image_ext,
