@@ -50,3 +50,5 @@ debug/
 
 models/depth_anything_v2_vitl.onnx
 *.engine
+# Track OMX workspace state in this repository
+# .omx/

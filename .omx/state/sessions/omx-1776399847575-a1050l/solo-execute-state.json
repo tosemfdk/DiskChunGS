@@ -1,0 +1,7 @@
+{
+  "active": false,
+  "started_at": "2026-04-17T04:24:18Z",
+  "current_phase": "completed",
+  "task_description": "Convert Konkuk Lake frames to TUM monocular layout and create a matching ORB-SLAM3 YAML for DiskChunGS.",
+  "completed_at": "2026-04-17T13:38:30+09:00"
+}

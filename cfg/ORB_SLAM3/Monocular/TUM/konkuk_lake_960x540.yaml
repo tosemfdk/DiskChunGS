@@ -1,0 +1,66 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust with real calibration when available.
+# This config targets the downsampled Konkuk Lake monocular sequence:
+# - 960x540 resolution
+# - 10 FPS
+# Intrinsics below are an approximate centered pinhole fallback because the
+# source MP4 metadata does not expose a calibrated camera model.
+#--------------------------------------------------------------------------------------------
+File.version: "1.0"
+
+Camera.type: "PinHole"
+
+# Camera calibration and distortion parameters (OpenCV)
+Camera1.fx: 775.000000
+Camera1.fy: 775.000000
+Camera1.cx: 480.000000
+Camera1.cy: 270.000000
+
+Camera1.k1: 0.000000
+Camera1.k2: 0.000000
+Camera1.p1: 0.000000
+Camera1.p2: 0.000000
+Camera1.k3: 0.000000
+
+# Camera frames per second
+Camera.fps: 10
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
+
+# Camera resolution
+Camera.width: 960
+Camera.height: 540
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 4000
+
+# ORB Extractor: Scale factor between levels in the scale pyramid
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid
+ORBextractor.nLevels: 8
+
+# ORB Extractor: Fast threshold
+ORBextractor.iniThFAST: 5
+ORBextractor.minThFAST: 3
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -1.8
+Viewer.ViewpointF: 500.0
